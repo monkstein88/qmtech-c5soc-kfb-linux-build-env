@@ -134,11 +134,10 @@ echo "    FDT ../socfpga_cyclone5_kfb_dual_sdram.dtb" >> extlinux/extlinux.conf
 echo "    APPEND root=/dev/mmcblk0p2 rw rootwait earlycon console=ttyS0,115200n8" >> extlinux/extlinux.conf
 
 # generated FPGA configuration (.rbf) file from Quartus, to the sdfs dir for SD Card. Then rename it to common used name (standard) - 'soc_system.rbf'.
-# NOTE: At this point, the generated in the 'output_files' folder by the Quartus project compilation - .sof and the .rbf files - had been created as uncrompresed (compression disabled) and with Configuration Mode set to 'Passive Parallel x16'. 
+# NOTE: At this point, we have generated in the 'quartus' folder by using the Quartus Convert Programming Files (.cof file configuration)- from uncompressed .sof the .rbf file. .rbf had been created as uncrompresed (compression disabled) and with Configuration Mode set to 'Passive Parallel x16'. 
 # This means, the Board's' MSEL DIP SW [4:0] = '00000' (all set to ON) , if the .rbf file is to be used as it is, during U-Boot FPGA loading.
 cd $SDCARD_TOP_FOLDER/sdfs
-cp $GHRD_SRC_DIR/quartus/output_files/qmtech_c5soc_kfb_dual_sdram_ghrd.rbf .
-mv qmtech_c5soc_kfb_dual_sdram_ghrd.rbf soc_system.rbf
+cp $GHRD_SRC_DIR/quartus/soc_system.rbf .
 
 # ========= THIS SECTION DOES NOT WORK - compressed .rbf is not being loaded by FPGA succesfully , returns "Command 'load' failed: Error -6" =============
 # # Now convert the generated .sof file , into (another) .rbf file, but this time compressed and and with Configuration Mode set to 'Passive Parallel x16', thas is to be loaded by the HPS (loading via the HPS FPGA Manager.)
@@ -466,8 +465,7 @@ sync
 # root@qmtech-c5soc-kfb:~#
 
 
-# Uboot stuff: 
-# u-boot.txt
+# For U-Boot 2024.07
 fatls mmc 0:1
 load mmc 0:1 ${loadaddr} soc_system.rbf;
 fpga load 0 ${loadaddr} $filesize;
@@ -476,5 +474,11 @@ fpga load 0 ${loadaddr} $filesize;
 CONFIG_BOOTCOMMAND="load mmc 0:1 ${loadaddr} soc_system.rbf && fpga load 0 ${loadaddr} $filesize; sysboot mmc 0:1 any ${scriptaddr} /extlinux/extlinux.conf"
 
 
+# For U-Boot 2013.01.01 (Oct 12 2016 - 10:40:34)
+fatls mmc 0:1
+fatload mmc 0:1 ${fpgadata} soc_system.rbf;
+fpga load 0 ${fpgadata} ${filesize};
 
+ext4ls mmc 0:2
+ext4load mmc 0:2 0x2000000 /boot/soc_system.rbf
 
