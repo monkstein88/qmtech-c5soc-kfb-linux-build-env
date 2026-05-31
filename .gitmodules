@@ -14,3 +14,6 @@
 	path = SOURCES/rootfs-socfpga
 	url = https://github.com/monkstein88/rootfs-socfpga.git
 	branch = main
+[submodule "SOURCES/hwlib-socfpga"]
+	path = SOURCES/hwlib-socfpga
+	url = https://github.com/altera-opensource/intel-socfpga-hwlib.git
