@@ -2,22 +2,25 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <sys/mman.h>
 #include <stdbool.h>
-#include "../common/hps.h"
-#include "../common/soc_system.h"
-#include "../common/alt_types.h"
+#include "../inc/soc_system.h"
+#include "../../../hwlib-socfpga/armv7a/hwlib/include/soc_cv_av/socal/hps.h"
+
 
 #define HW_REGS_BASE ( ALT_STM_OFST )
 #define HW_REGS_SPAN ( 0x04000000 )
 #define HW_REGS_MASK ( HW_REGS_SPAN - 1 )
+
+#define LED_BIT_MASK 0x1 // bit mask for the first LED (LED0)
 
 int main()
 {
   bool ret = false;
   int fd;
   void* virtualBase = NULL;
-  uint32_t* h2p_lw_led_ptr = NULL;
+  unsigned long* h2p_lw_led_ptr = NULL;
 
   /* map the address space for the LED registers into user space so we can interact with them.
    * we'll actually map in the entire CSR span of the HPS since we want to access various registers within that span */
@@ -34,7 +37,7 @@ int main()
   }
   
   /* map the address space for the LED registers into user space so we can interact with them */
-  virtualBase = mmap( NULL, HW_REGS_SPAN, ( PROT_DEAD | PROT_WRITE ), MAP_SHARED, fd, HW_REGS_BASE);
+  virtualBase = mmap( NULL, HW_REGS_SPAN, ( PROT_READ | PROT_WRITE ), MAP_SHARED, fd, HW_REGS_BASE);
   if( virtualBase == MAP_FAILED ) 
   {
      printf("ERROR: mmap() failed...\n");
@@ -46,21 +49,23 @@ int main()
      ret = true;
   } 
 
-  /* get the address that maps to the LED control register in the FPGA */
-  h2p_lw_led_ptr = ((uint32_t*) virtualBase) + ((uint32_t*) ((uint32_t)( ALT_LWFPGASLVS_ADDR + LED_PIO_BASE) & (uint32_t)(HW_REGS_MASK)));
+  /* get the address that maps to the LED control ('data') register in the FPGA */
+  h2p_lw_led_ptr = virtualBase + ((unsigned long)( ALT_LWFPGASLVS_ADDR + LED_PIO_BASE) & (unsigned long)(HW_REGS_MASK));
  
-  uint32_t led_value = 0;
-  uint32_t led_mask = 0x1;
-
-   while(1)
-   {
+  unsigned long led_value = 0;
+  while(1)
+  {
+      printf("INFO: writing value 0x%lX to the LED control register...\n", led_value);
       /* write to the LED control register in the FPGA to turn on the LEDs */
       *h2p_lw_led_ptr = led_value;
       usleep(500000);
       
       /* toggle the value to turn on/off the LEDs */
-      led_value ^= led_mask;
+      led_value ^= LED_BIT_MASK;
    }
   
   return ret;
 }
+
+
+
