@@ -17,7 +17,7 @@ export GHRD_SRC_DIR="$BUILD_TOP_FOLDER/SOURCES/qmtech-c5soc-kfb-dual-sdram-ghrd"
 export UBOOT_SRC_DIR="$BUILD_TOP_FOLDER/SOURCES/u-boot-socfpga"                   # 'qmtech_c5soc_kfb_dual_sdram_v2024.07' branch (take the latest commit)
 export LINUX_SRC_DIR="$BUILD_TOP_FOLDER/SOURCES/linux-socfpga"                    # 'socfpga-6.6.22-lts' branch  (take the latest commit)
 export ROOTFS_SRC_DIR="$BUILD_TOP_FOLDER/SOURCES/rootfs-socfpga"                  # 'main' branch (take the latest commit)
-
+export LINUX_APP_FILEPATH="$BUILD_TOP_FOLDER/SOURCES/applications-linux/hps_fpga_led_blink/HPS_FPGA_LED_BLINK"     # Linux Application binary (executable) to be copied to the SD Card on the rootfs in the 'root' directory
 export UBOOT_BUILD_DIR="$BUILD_TOP_FOLDER/BUILD/u-boot-socfpga"
 export LINUX_BUILD_DIR="$BUILD_TOP_FOLDER/BUILD/linux-socfpga"
 export ROOTFS_BUILD_DIR="$BUILD_TOP_FOLDER/BUILD/rootfs-socfpga"
@@ -26,7 +26,6 @@ export SDCARD_TOP_FOLDER="$BUILD_TOP_FOLDER/SD_CARD"
 
 # This must be adjusted/configured to reference the actual SD Card Device:
 export SDCARD_DEV=/dev/sdb
-
 
 
 # 2. Get the sources from the handoff folder, format them appropriately, and copy them into the U-Boot source code:
@@ -157,6 +156,10 @@ sudo rm -rf lib/modules/*
 sync
 sudo cp -r $LINUX_BIN_DIR/a9/modules/* lib/modules  
 sync
+# Copy the Linux (binary executable) Application
+sudo mkdir $SDCARD_TOP_FOLDER/rootfs/home/root/applications # Go to the root of the rootfs partition
+sudo cp $LINUX_APP_FILEPATH $SDCARD_TOP_FOLDER/rootfs/home/root/applications 
+
 # Copy over the U-boot bootable binary file:
 cd $SDCARD_TOP_FOLDER #
 rm -rf uboot && mkdir uboot && cd uboot
