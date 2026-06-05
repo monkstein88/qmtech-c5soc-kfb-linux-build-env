@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <sys/mman.h>
 #include <stdbool.h>
-#include "../inc/soc_system.h"
-#include "../../../hwlib-socfpga/armv7a/hwlib/include/soc_cv_av/socal/hps.h"
+#include "soc_system.h"
+#include "hps.h"
 
 
 #define HW_REGS_BASE ( ALT_STM_OFST )

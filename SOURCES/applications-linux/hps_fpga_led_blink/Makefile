@@ -15,6 +15,7 @@ OBJS = $(SRCS:.c=.o)
 CFLAGS = -g -Wall -Werror \
 	-I$(HWLIBS_ROOT)/include \
 	-I$(HWLIBS_ROOT)/include/$(ALT_DEVICE_FAMILY) \
+	-I$(HWLIBS_ROOT)/include/$(ALT_DEVICE_FAMILY)/socal \
 	-I$(INCS) \
 	-D$(ALT_DEVICE_FAMILY)
 LDFLAGS = -g -Wall -Werror
@@ -32,3 +33,4 @@ $(TARGET): $(OBJS)
 .PHONY: clean
 clean:
 	rm -f $(TARGET) $(OBJS) *.a *~
+
