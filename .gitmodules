@@ -17,3 +17,6 @@
 [submodule "SOURCES/hwlib-socfpga"]
 	path = SOURCES/hwlib-socfpga
 	url = https://github.com/altera-opensource/intel-socfpga-hwlib.git
+[submodule "SOURCES/applications-linux"]
+	path = SOURCES/applications-linux
+	url = https://github.com/monkstein88/applications-linux
